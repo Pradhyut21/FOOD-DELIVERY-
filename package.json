@@ -1,0 +1,7 @@
+{
+  "name": "cravemate",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm install --prefix restaurant-dashboard && npm run build --prefix restaurant-dashboard"
+  }
+}

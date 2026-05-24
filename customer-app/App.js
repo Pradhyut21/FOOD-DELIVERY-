@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 
 const MOODS = ['Comfort', 'Celebration', 'Healthy', 'Adventurous', 'Hangover Fix', 'Quick Bite'];
 
@@ -9,6 +9,50 @@ const RESTAURANTS = [
 ];
 
 export default function App() {
+  const [cart, setCart] = useState([]);
+  const [view, setView] = useState('home'); // 'home' or 'checkout'
+
+  const addToCart = (item) => {
+    setCart([...cart, item]);
+  };
+
+  const placeOrder = () => {
+    alert('Order Placed Successfully!');
+    setCart([]);
+    setView('home');
+  };
+
+  if (view === 'checkout') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setView('home')}>
+            <Text style={styles.backButton}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Checkout</Text>
+        </View>
+        <ScrollView style={styles.checkoutBody}>
+          <Text style={styles.sectionTitle}>Your Order</Text>
+          {cart.map((item, index) => (
+            <View key={index} style={styles.cartItem}>
+              <Text style={styles.cartItemText}>{item.name}</Text>
+              <Text style={styles.cartItemText}>₹150</Text>
+            </View>
+          ))}
+          <View style={styles.totalRow}>
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={styles.totalText}>₹{cart.length * 150}</Text>
+          </View>
+        </ScrollView>
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.placeOrderBtn} onPress={placeOrder}>
+            <Text style={styles.placeOrderText}>Place Order (COD)</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -42,16 +86,31 @@ export default function App() {
             <View key={restaurant.id} style={styles.restaurantCard}>
               <View style={styles.imagePlaceholder} />
               <View style={styles.cardInfo}>
-                <Text style={styles.restaurantName}>{restaurant.name}</Text>
-                <Text style={styles.restaurantDetails}>
-                  ⭐ {restaurant.rating} • {restaurant.time} • {restaurant.cuisine} {restaurant.isVeg ? '🥬' : '🍗'}
-                </Text>
+                <View>
+                  <Text style={styles.restaurantName}>{restaurant.name}</Text>
+                  <Text style={styles.restaurantDetails}>
+                    ⭐ {restaurant.rating} • {restaurant.time} • {restaurant.cuisine} {restaurant.isVeg ? '🥬' : '🍗'}
+                  </Text>
+                </View>
+                <TouchableOpacity style={styles.addBtn} onPress={() => addToCart(restaurant)}>
+                  <Text style={styles.addBtnText}>ADD</Text>
+                </TouchableOpacity>
               </View>
             </View>
           ))}
         </View>
 
       </ScrollView>
+
+      {/* Floating Cart Summary */}
+      {cart.length > 0 && (
+        <View style={styles.floatingCart}>
+          <Text style={styles.cartText}>{cart.length} item(s) | ₹{cart.length * 150}</Text>
+          <TouchableOpacity style={styles.viewCartBtn} onPress={() => setView('checkout')}>
+            <Text style={styles.viewCartText}>View Cart →</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -60,6 +119,65 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F0F0F',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#1A1A1A',
+  },
+  backButton: {
+    color: '#FF6B00',
+    fontSize: 18,
+    marginRight: 16,
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  checkoutBody: {
+    padding: 16,
+  },
+  cartItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#1A1A1A',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  cartItemText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#333',
+    marginTop: 16,
+  },
+  totalText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  footer: {
+    padding: 16,
+    backgroundColor: '#1A1A1A',
+  },
+  placeOrderBtn: {
+    backgroundColor: '#22C55E',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  placeOrderText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   topBar: {
     flexDirection: 'row',
@@ -132,6 +250,9 @@ const styles = StyleSheet.create({
   },
   cardInfo: {
     padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   restaurantName: {
     color: '#FFFFFF',
@@ -142,5 +263,41 @@ const styles = StyleSheet.create({
   restaurantDetails: {
     color: '#AAAAAA',
     fontSize: 14,
+  },
+  addBtn: {
+    backgroundColor: '#FF6B00',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  addBtnText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  floatingCart: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#22C55E',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    alignItems: 'center',
+  },
+  cartText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  viewCartBtn: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  viewCartText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 });
