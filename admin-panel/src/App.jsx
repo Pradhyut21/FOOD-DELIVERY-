@@ -1,0 +1,246 @@
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { 
+  LayoutDashboard, 
+  Store, 
+  Bike, 
+  Users, 
+  Settings, 
+  Bell, 
+  Search, 
+  TrendingUp, 
+  TrendingDown 
+} from 'lucide-react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from 'recharts';
+import { overviewStats, gmvData, restaurants, riders } from './data/mockData';
+
+// --- COMPONENTS ---
+function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { path: '/', label: 'Overview', icon: LayoutDashboard },
+    { path: '/restaurants', label: 'Restaurants', icon: Store },
+    { path: '/fleet', label: 'Delivery Fleet', icon: Bike },
+    { path: '/users', label: 'Users & Support', icon: Users },
+    { path: '/settings', label: 'Settings', icon: Settings },
+  ];
+
+  return (
+    <aside className="sidebar">
+      <div className="brand">
+        <span>Crave</span>Mate Admin
+      </div>
+      <nav className="nav-menu">
+        {navItems.map(item => (
+          <button
+            key={item.path}
+            className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+            onClick={() => navigate(item.path)}
+          >
+            <item.icon size={20} />
+            {item.label}
+          </button>
+        ))}
+      </nav>
+    </aside>
+  );
+}
+
+function Header() {
+  return (
+    <header className="header">
+      <div className="flex items-center gap-2" style={{ background: 'var(--bg-elevated)', padding: '8px 16px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', width: 300 }}>
+        <Search size={16} color="var(--color-text-secondary)" />
+        <input type="text" placeholder="Search anything..." style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--color-text-primary)', width: '100%', fontSize: 13 }} />
+      </div>
+      <div className="flex items-center gap-4">
+        <button style={{ position: 'relative' }}>
+          <Bell size={20} color="var(--color-text-secondary)" />
+          <span style={{ position: 'absolute', top: 0, right: 0, width: 8, height: 8, background: 'var(--color-danger)', borderRadius: '50%' }} />
+        </button>
+        <div className="flex items-center gap-2">
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
+            A
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 500 }}>Admin User</div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// --- PAGES ---
+function Overview() {
+  return (
+    <div>
+      <h1 className="text-xl mb-6">Platform Overview</h1>
+      
+      <div className="grid-4 mb-6">
+        <div className="stat-card">
+          <div className="stat-title">Total GMV <span className="stat-change pos flex items-center gap-1"><TrendingUp size={12}/> {overviewStats.gmvGrowth}</span></div>
+          <div className="stat-value">{overviewStats.totalGmv}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-title">Active Orders <span className="stat-change pos flex items-center gap-1"><TrendingUp size={12}/> {overviewStats.ordersGrowth}</span></div>
+          <div className="stat-value">{overviewStats.activeOrders}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-title">Active Users <span className="stat-change pos flex items-center gap-1"><TrendingUp size={12}/> {overviewStats.usersGrowth}</span></div>
+          <div className="stat-value">{overviewStats.activeUsers}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-title">Restaurants <span className="stat-change pos flex items-center gap-1"><TrendingUp size={12}/> {overviewStats.restaurantsGrowth}</span></div>
+          <div className="stat-value">{overviewStats.activeRestaurants}</div>
+        </div>
+      </div>
+
+      <div className="card mb-6">
+        <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Revenue Split (Delivery vs Dine-Out)</h2>
+        <div style={{ height: 300, width: '100%' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={gmvData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--color-text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="var(--color-text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
+              <Tooltip cursor={{fill: 'var(--bg-hover)'}} contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--color-border)', borderRadius: 8 }} />
+              <Legend />
+              <Bar dataKey="delivery" name="Delivery" stackId="a" fill="var(--color-primary)" radius={[0,0,4,4]} />
+              <Bar dataKey="dineout" name="Dine-Out" stackId="a" fill="var(--color-accent)" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Restaurants() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl">Restaurant Management</h1>
+        <button className="btn btn-primary">+ Add Restaurant</button>
+      </div>
+
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Restaurant Name</th>
+              <th>Owner</th>
+              <th>Commission</th>
+              <th>Last Payout</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {restaurants.map(r => (
+              <tr key={r.id}>
+                <td style={{ color: 'var(--color-text-muted)' }}>{r.id}</td>
+                <td style={{ fontWeight: 600 }}>{r.name}</td>
+                <td>{r.owner}</td>
+                <td>{r.commission}</td>
+                <td>{r.lastPayout}</td>
+                <td>
+                  <span className={`badge ${
+                    r.status === 'Active' ? 'badge-success' : 
+                    r.status === 'Pending Approval' ? 'badge-warning' : 'badge-danger'
+                  }`}>
+                    {r.status}
+                  </span>
+                </td>
+                <td>
+                  <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: 11 }}>Manage</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function Fleet() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl">Delivery Fleet</h1>
+        <div className="flex gap-2">
+          <button className="btn btn-secondary">Map View</button>
+          <button className="btn btn-primary">Onboard Rider</button>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Rider Name</th>
+              <th>Total Deliveries</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {riders.map(r => (
+              <tr key={r.id}>
+                <td style={{ color: 'var(--color-text-muted)' }}>{r.id}</td>
+                <td style={{ fontWeight: 600 }}>{r.name}</td>
+                <td>{r.deliveries}</td>
+                <td>⭐ {r.rating}</td>
+                <td>
+                  <span className={`badge ${
+                    r.status === 'Online' ? 'badge-success' : 
+                    r.status === 'On Delivery' ? 'badge-info' : 'badge-danger'
+                  }`}>
+                    {r.status}
+                  </span>
+                </td>
+                <td>
+                  <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: 11 }}>View Profile</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// --- APP ---
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Sidebar />
+      <div className="main-content">
+        <Header />
+        <main className="content-area">
+          <Routes>
+            <Route path="/" element={<Overview />} />
+            <Route path="/restaurants" element={<Restaurants />} />
+            <Route path="/fleet" element={<Fleet />} />
+            <Route path="/users" element={<div className="card">User management coming soon...</div>} />
+            <Route path="/settings" element={<div className="card">Platform settings coming soon...</div>} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  );
+}
