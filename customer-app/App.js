@@ -46,7 +46,7 @@ export default function App() {
         </ScrollView>
         <View style={styles.footer}>
           <TouchableOpacity style={styles.placeOrderBtn} onPress={placeOrder}>
-            <Text style={styles.placeOrderText}>Place Order (COD)</Text>
+            <Text style={styles.placeOrderText}>Place Order </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
   },
   backButton: {
-    color: '#FF6B00',
+    color: '#ff6a00ef',
     fontSize: 18,
     marginRight: 16,
   },
