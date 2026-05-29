@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Navigation, Wallet, User, CheckCircle, Clock } from 'lucide-react';
 import { riderData, todaysEarnings, activePing } from './data/mockData';
+import ProfilePage from './ProfilePage';
 
 // --- COMPONENTS ---
 function TopNav({ isOnline, setIsOnline }) {
@@ -290,7 +291,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard isOnline={isOnline} />} />
           <Route path="/earnings" element={<Earnings />} />
-          <Route path="/profile" element={<div className="page" style={{padding: 24, textAlign: 'center'}}>Profile Settings Coming Soon</div>} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/delivery" element={<ActiveDelivery />} />
         </Routes>
       </div>

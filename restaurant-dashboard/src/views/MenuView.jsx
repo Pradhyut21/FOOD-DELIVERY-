@@ -14,7 +14,8 @@ export default function MenuView() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newItem, setNewItem] = useState({ name: '', price: '', category: 'Mains', isVeg: true });
-
+  const [showEditModal, setShowEditModal] = useState(false);
+const [editItem, setEditItem] = useState(null);
   const categories = ['All', ...new Set(mockMenu.map(i => i.category))];
   const filtered = activeCategory === 'All' ? menu : menu.filter(i => i.category === activeCategory);
 
@@ -122,14 +123,30 @@ export default function MenuView() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button className="btn btn-secondary btn-sm" id={`edit-item-${item.id}`}>Edit</button>
                       <button
-                        className="btn btn-sm"
-                        style={{ background: 'var(--color-error-subtle)', color: 'var(--color-error)', border: '1px solid rgba(239,68,68,0.2)' }}
-                        id={`delete-item-${item.id}`}
-                      >
-                        Delete
-                      </button>
+  className="btn btn-secondary btn-sm"
+  id={`edit-item-${item.id}`}
+  onClick={() => {
+    setEditItem(item);
+    setShowEditModal(true);
+  }}
+>
+  Edit
+</button>
+                      <button
+  className="btn btn-sm"
+  style={{
+    background: 'var(--color-error-subtle)',
+    color: 'var(--color-error)',
+    border: '1px solid rgba(239,68,68,0.2)'
+  }}
+  id={`delete-item-${item.id}`}
+  onClick={() => {
+    setMenu(prev => prev.filter(i => i.id !== item.id));
+  }}
+>
+  Delete
+</button>
                     </div>
                   </td>
                 </tr>
@@ -179,6 +196,98 @@ export default function MenuView() {
           </div>
         </div>
       )}
+      {showEditModal && editItem && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.7)',
+      backdropFilter: 'blur(4px)',
+      zIndex: 1000,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}
+  >
+    <div
+      style={{
+        background: 'var(--bg-card)',
+        padding: 28,
+        borderRadius: 16,
+        width: 440
+      }}
+    >
+      <h2 style={{ marginBottom: 20 }}>Edit Dish</h2>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <input
+          className="input"
+          value={editItem.name}
+          onChange={(e) =>
+            setEditItem(prev => ({
+              ...prev,
+              name: e.target.value
+            }))
+          }
+        />
+
+        <input
+          className="input"
+          type="number"
+          value={editItem.price}
+          onChange={(e) =>
+            setEditItem(prev => ({
+              ...prev,
+              price: e.target.value
+            }))
+          }
+        />
+
+        <select
+          className="input"
+          value={editItem.category}
+          onChange={(e) =>
+            setEditItem(prev => ({
+              ...prev,
+              category: e.target.value
+            }))
+          }
+        >
+          <option>Starters</option>
+          <option>Mains</option>
+          <option>Desserts</option>
+          <option>Drinks</option>
+        </select>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            className="btn btn-secondary"
+            style={{ flex: 1 }}
+            onClick={() => setShowEditModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="btn btn-primary"
+            style={{ flex: 1 }}
+            onClick={() => {
+              setMenu(prev =>
+                prev.map(i =>
+                  i.id === editItem.id ? editItem : i
+                )
+              );
+
+              setShowEditModal(false);
+            }}
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

@@ -14,6 +14,11 @@ export default function ReservationsView() {
   const [activeDate, setActiveDate] = useState('2026-05-25');
   const [queueCount, setQueueCount] = useState(3);
   const [showFlashModal, setShowFlashModal] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
+  const [customer, setCustomer] = useState('');
+const [date, setDate] = useState('');
+const [time, setTime] = useState('');
+const [party, setParty] = useState('');
 
   const dateReservations = reservations.filter(r => r.date === activeDate);
 
@@ -31,7 +36,10 @@ export default function ReservationsView() {
           <button className="btn btn-secondary" id="create-flash-table-btn" onClick={() => setShowFlashModal(true)}>
             ⚡ Create Flash Table
           </button>
-          <button className="btn btn-primary" id="add-reservation-btn">+ Add Reservation</button>
+          <button
+          className="btn btn-primary"
+          id="add-reservation-btn"
+          onClick={() => setShowReservationModal(true)}> + Add Reservation</button>
         </div>
       </div>
 
@@ -197,6 +205,95 @@ export default function ReservationsView() {
           </div>
         </div>
       )}
+      {showReservationModal && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000
+    }}
+  >
+    <div
+      style={{
+        background: 'var(--bg-card)',
+        padding: 24,
+        borderRadius: 12,
+        width: 400
+      }}
+    >
+      <h2 style={{ marginBottom: 20 }}>Add Reservation</h2>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <input
+  className="input"
+  placeholder="Customer Name"
+  value={customer}
+  onChange={(e) => setCustomer(e.target.value)}
+/>
+        <input
+  className="input"
+  type="date"
+  value={date}
+  onChange={(e) => setDate(e.target.value)}
+/>
+        <input
+  className="input"
+  placeholder="Time"
+  value={time}
+  onChange={(e) => setTime(e.target.value)}
+/>
+        <input
+  className="input"
+  type="number"
+  placeholder="Party Size"
+  value={party}
+  onChange={(e) => setParty(e.target.value)}
+/>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            className="btn btn-secondary"
+            style={{ flex: 1 }}
+            onClick={() => setShowReservationModal(false)}
+          >
+            Cancel
+          </button>
+
+          <button
+  className="btn btn-primary"
+  style={{ flex: 1 }}
+  onClick={() => {
+    const newReservation = {
+      id: `RES-${Date.now()}`,
+      customer,
+      date,
+      time,
+      party: Number(party),
+      status: 'confirmed',
+      package: null
+    };
+
+    setReservations(prev => [...prev, newReservation]);
+
+    setCustomer('');
+    setDate('');
+    setTime('');
+    setParty('');
+
+    setShowReservationModal(false);
+  }}
+>
+  Add
+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

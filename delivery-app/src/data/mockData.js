@@ -1,10 +1,9 @@
 export const riderData = {
-  id: 'RDR-8421',
-  name: 'Rajesh K.',
+  name: 'Rahul Kumar',
+  vehicle: 'Bike',
   rating: 4.8,
-  vehicle: 'Hero Splendor',
-  totalDeliveries: 1240,
-  joined: 'March 2023',
+  deliveries: 1240,
+  phone: '+91 9876543210'
 };
 
 export const todaysEarnings = {
